@@ -1,5 +1,5 @@
 # This script is very similar to (but I don't think exactly the same as) a small
-# portion of "Dancing Madly", a song by Nobuo Uematsu in Final Fantasy VI.  The
+# portion of "Dancing Mad", a song by Nobuo Uematsu in Final Fantasy VI.  The
 # purpose of the script is to demonstrate changing from a major key to a minor
 # key easily.
 
