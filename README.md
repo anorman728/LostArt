@@ -7,7 +7,7 @@ This is a script that helps writing MIDI files (which I consider to be a lost ar
 
 These classes use Python 3.x, and I don't think they're compatible with Python 2.7.
 
-There are some example scripts in the root directory that uses this.
+There are some example scripts in the root directory that use this.
 
 game_maintheme.py is an original tune of mine.  You can listen to it on [this YouTube video](https://youtu.be/qohpvs_D3Tk).
 
