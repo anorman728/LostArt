@@ -204,7 +204,7 @@ class Voice:
         '''
         Set the "key," which is a little more nuanced than in real music.  The
         key is set by an integer, not a letter like "Key of G."  (For reference,
-        60 is middle C.  The key is then used by scaledNote and autoChord as a
+        60 is middle C.)  The key is then used by scaledNote and autoChord as a
         base.  As such, there IS a difference between running setKey(60) and
         setKey(72), even though 60 and 72 are both C, because 72 is an octave
         higher, so all notes added via scaledNote and autoChord will be an
