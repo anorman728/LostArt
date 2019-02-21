@@ -17,7 +17,7 @@ from Voice import Voice # For constants
 comp = Composition(2, 160)
 
 rightHand = comp.buildVoice(1, 'Right Hand')
-# Right hand of the keyboard.  I never build a left hand voice.
+# Right hand of the keyboard.  I never built a left hand voice.
 
 rightHand.setKey(7+12*4)
 
