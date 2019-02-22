@@ -233,6 +233,9 @@ class Voice:
         noteInd is the index of the current scale, so scaledNote(5,1) will add
         the fifth note of the current scale for one second.
 
+        Can also enter a list to add a constant.  So, [5,1] would be 5-sharp
+        and [5, -1] would be 5-flat.
+
         setKey needs to be run before anything involving scales can be used.
 
         It's easy to get confused by this (or at least I got confused by this):
@@ -277,7 +280,14 @@ class Voice:
 
         (See docstring on scaledNote to see details on the params.)
         '''
-        self.asyncNote(self._getScaledNote(noteInd), dur)
+        if type(noteInd) == list:
+            noteIndBase = noteInd[0]
+            noteIndOffset = noteInd[1]
+        else:
+            noteIndBase = noteInd
+            noteIndOffset = 0
+
+        self.asyncNote(self._getScaledNote(noteIndBase) + noteIndOffset, dur)
 
     def scaledChromaticNote(self, note, dur):
         '''
