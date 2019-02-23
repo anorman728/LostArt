@@ -1,3 +1,5 @@
+from Note import Note
+from ScaledNote import ScaledNote
 import math
 
 class Voice:
@@ -126,15 +128,27 @@ class Voice:
         Add a note without increasing the current time.
         This also acts as a base to all other functions that add notes.
         '''
-        if (not self._mute and not self._stop):
-            self._mf.addNote(
-                self._track,
-                self._channel,
-                pitch + self._pitchoffset,
-                self._currenttime,
-                dur,
-                self._volume
-            )
+        # Return if muted or stopped.
+        if self._mute or self._stop:
+            return
+
+        # Convert to Note object, if it's not already a Note or a ScaledNote
+        # object.
+        if type(pitch) == int:
+            noteObj = Note(pitch)
+        elif type(pitch) == ScaledNote or type(pitch) == Note:
+            noteObj = pitch
+        else:
+            raise ValueError("note must be integer, Note, or ScaledNote object.")
+
+        self._mf.addNote(
+            self._track,
+            self._channel,
+            noteObj.getPitch() + self._pitchoffset,
+            self._currenttime,
+            dur,
+            self._volume + noteObj.getVolumeOffset()
+        )
 
     # Todo: String of single-length notes.
 
@@ -273,21 +287,30 @@ class Voice:
         '''
         self.scaledChord([topNote,topNote-2,topNote-4], dur)
 
-    def asyncScaledNote(self, noteInd, dur):
+    def asyncScaledNote(self, note, dur):
         '''
         Add a note according to the current key and scale without increasing
         time.
 
+        note can be either an integer for a numeric index of the scale or it
+        can be a ScaledNote object.
+
         (See docstring on scaledNote to see details on the params.)
         '''
-        if type(noteInd) == list:
-            noteIndBase = noteInd[0]
-            noteIndOffset = noteInd[1]
+        # Convert to ScaledNote object, if it's not already.
+        if type(note) == int:
+            scaledNoteObj = ScaledNote(note)
+        elif type(note) == ScaledNote:
+            scaledNoteObj = note
         else:
-            noteIndBase = noteInd
-            noteIndOffset = 0
+            raise ValueError("note must be either integer or ScaledNote object.")
 
-        self.asyncNote(self._getScaledNote(noteIndBase) + noteIndOffset, dur)
+        # Add absolute pitch for note.
+        pitch = self._getScaledNote(scaledNoteObj.getNote())
+        offset = scaledNoteObj.getAcc()
+        scaledNoteObj.setPitch(pitch + offset)
+
+        self.asyncNote(scaledNoteObj, dur)
 
     def scaledChromaticNote(self, note, dur):
         '''
