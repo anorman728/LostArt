@@ -1,4 +1,5 @@
 from Note import Note
+import copy
 
 class ScaledNote(Note): # Not 100% sure this will work yet.
     '''
@@ -51,3 +52,19 @@ class ScaledNote(Note): # Not 100% sure this will work yet.
 
     def getAcc(self):
         return self._acc
+
+    def __add__(self, scNote):
+        '''
+        This function simply adds an SC note to existing one.
+
+        Note: As of now, this does nothing with tuning!
+        '''
+        returnNote = copy.deepcopy(self)
+
+        if type(scNote) == int:
+            returnNote.setNote(self.getNote() + scNote)
+        else:
+            returnNote.setNote(self.getNote() + scNote.getNote())
+            returnNote.setAcc(self.getAcc() + scNote.getAcc())
+
+        return returnNote
