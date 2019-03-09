@@ -1,4 +1,4 @@
-# Main theme
+# Bustling town
 
 # Import modules.
 import os
@@ -8,6 +8,9 @@ import sys
 sys.path.insert(0, './src')
 from Composition import Composition
 from Voice import Voice
+
+# Source common settings.
+exec(open("./default_settings.py").read())
 
 # Script below.
 
@@ -176,9 +179,6 @@ for x in range(0,4):
 
 
 
-filename = 'Output/game_bustling_town.mid'
+filename = 'Output/' + __file__[:-2] + 'mid'
 comp.writeToFile(filename)
-# To listen on write, uncomment below if you have a Linux OS with an
-# alsa-based sound system.  (You'll need to have fluidsynth installed.)
-# Otherwise, you'll need to open the sound file.
-os.system('fluidsynth -a alsa -g 1.5 /usr/share/sounds/sf2/FluidR3_GM.sf2 ./' + filename)
+os.system('fluidsynth -a alsa -g 1.5 ' + SETTING__SOUND_FONT + ' ./' + filename)
