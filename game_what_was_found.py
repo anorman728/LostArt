@@ -255,7 +255,7 @@ intro(tuba)
 main_perc(timpani,2)
 
 
-filename = 'Output/untitled01.mid'
+filename = 'Output/game_what_was_found.mid'
 comp.writeToFile(filename)
 # To listen on write, uncomment below if you have a Linux OS with an
 # alsa-based sound system.  (You'll need to have fluidsynth installed.)

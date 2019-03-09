@@ -26,6 +26,27 @@ class Voice:
     # Heptatonic blues scale.
     HEPTATONIC_BLUES = [0,2,3,5,6,9,10]
 
+    # Whole-tone scale.
+    WHOLE_TONE = [0,2,4,6,8,10]
+
+    # Dorian mode.
+    DORIAN = [0,2,3,5,7,9,10]
+
+    # Phrygian mode.
+    PHRYGIAN = [0,1,3,5,7,8,10]
+
+    # Lydian mode.
+    LYDIAN = [0,2,4,6,7,9,11]
+
+    # Mixolydian mode.
+    MIXOLYDIAN = [0,2,4,5,7,9,10]
+
+    # Aeolian mode.
+    AEOLIAN = [0,2,3,5,7,8,10]
+
+    # Locrian mode.
+    LOCRIAN = [0,1,3,5,6,8,10]
+
 
     # Private variables listed below this line.
 
