@@ -40,11 +40,11 @@ def guitarBackground(voice):
     voice.scaledChord([2, -2], .5)
 
 def percBackground(voice):
-    for x in range(0,4):
+    for _ in range(0,4):
         voice.scaledNote(5, .5)
 
 def part01(voice, useChord = False):
-    def part01Dum(voice):
+    def part01Dum(voice): # 9 * .5 = 4.5 beats
         stacEighth(voice, 6)
         stacEighth(voice, 9)
         stacEighth(voice, 12)
@@ -62,18 +62,20 @@ def part01(voice, useChord = False):
             voice.scaledNote(9, 1.5)
 
     part01Dum(voice)
-    voice.scaledChord([9], .25)
+    voice.scaledChord([9], .25)  # 1.25 beats
     voice.scaledChord([11], .25)
     voice.scaledChord([9], .25)
     voice.scaledChord([8], .5)
+
     chordDum(voice)
 
     voice.rest(.75)
     part01Dum(voice)
-    voice.scaledChord([2], .25)
+    voice.scaledChord([2], .25) # 1.25 beats.
     voice.scaledChord([6], .25)
     voice.scaledChord([7], .25)
-    voice.scaledChord([8], .25)
+    voice.scaledChord([8], .5) # This was previously .25.
+
     chordDum(voice)
 
 def part02(voice, useChord = False):
@@ -112,6 +114,26 @@ def part02(voice, useChord = False):
 
     part02Dum(voice)
 
+def part02_complete(voiceBk, voiceMain, voicePerc, dontGoUpOctave, useChord):
+    voiceMain.catchUp(voiceBk.whereAreWe())
+    pitchOffset = 12
+    if dontGoUpOctave:
+        voiceMain.adjustPitchOffset(-pitchOffset)
+
+    guitarBackground2(voiceBk)
+    part02(voiceMain, useChord)
+    voicePerc.catchUp(voiceBk.whereAreWe())
+    for _ in range(0,4):
+        guitarBackground(voiceBk)
+        percBackground(voicePerc)
+    if useChord:
+        voiceMain.scaledChord([9, 6], 4)
+    else:
+        voiceMain.scaledNote(9, 4)
+
+    if dontGoUpOctave:
+        voiceMain.adjustPitchOffset(pitchOffset) # Back to normal.
+
 def guitarBackground2(voice):
     def guitarBackground2Dum(voice):
         voice.scaledChord([-5, -8], 2)
@@ -122,19 +144,62 @@ def guitarBackground2(voice):
     voice.scaledChromaticChord([-6, -13], 2)
     guitarBackground2Dum(voice)
 
-# Start.
+def part03(voice, useChord = False):
+    def part03Dum(voice):
+        stacEighth(voice, 6)
+        stacEighth(voice, 9)
+        stacEighth(voice, 12) # 1.5
 
-#comp.stop()#dmz1
+        voice.scaledNote(13, .25)
+        voice.scaledNote(12, .25)
+        voice.scaledNote(9, .25)
+        voice.rest(.25) # 2.5
+
+        voice.scaledNote(12, .25)
+        voice.scaledNote(9, .25)
+        voice.scaledNote(6, .25)
+        voice.rest(.25) # 3.5
+
+        voice.scaledNote(9, .25)
+        voice.scaledNote(6, .25)
+        voice.scaledNote(8, .25)
+        voice.scaledNote(12, .25) # 4.5
+
+    def chordDum(voice):
+        if useChord:
+            voice.scaledChord([9,6], 1.5)
+        else:
+            voice.scaledNote(9, 1.5)
+
+    part03Dum(voice)
+    voice.scaledNote(11, .25)
+    voice.scaledNote(9, .25)
+    voice.scaledNote(6, .25)
+    voice.scaledNote(8, .5)
+    chordDum(voice)
+
+    voice.rest(.75)
+    part03Dum(voice)
+    voice.scaledNote(11, .25)
+    voice.scaledNote(12, .25)
+    voice.scaledNote(11, .25)
+    voice.scaledNote(9, .5)
+    chordDum(voice)
+
+    
+
+# Start.
 
 # Solo guitar intro.
 
-for x in range(0,4):
+for _ in range(0,4):
     guitarBackground(guitar)
 
+# Parts 1 & 2, both instruments.
 for voice in [violin, flute]:
     # First part.
     voice.catchUp(guitar.whereAreWe()+.5)
-    for x in range(0,8):
+    for _ in range(0,8):
         guitarBackground(guitar)
     if voice == violin:
         part01(voice, True)
@@ -143,37 +208,39 @@ for voice in [violin, flute]:
 
     # Add percussion.
     perc.catchUp(guitar.whereAreWe())
-    for x in range(0,4):
+    for _ in range(0,4):
         guitarBackground(guitar)
         percBackground(perc)
 
     # Second part.
-    voice.catchUp(guitar.whereAreWe())
+    part02_complete(guitar, voice, perc, voice == flute, voice == violin)
 
-    fluteOffset = 12
-    if voice == flute:
-        voice.adjustPitchOffset(-fluteOffset) # Otherwise this part sounds like a piccolo
 
-    guitarBackground2(guitar)
+# Part 3 and part 2 redux, both instruments.
+for voice in [violin, flute]:
+
+    # Part 3
+    voice.catchUp(guitar.whereAreWe() + .5)
+
+    for _ in range(0,8):
+        guitarBackground(guitar)
     if voice == violin:
-        part02(voice, True)
+        part03(voice, True)
     else:
-        part02(voice)
+        part03(voice)
+
+    # Add percussion
     perc.catchUp(guitar.whereAreWe())
-    for x in range(0,4):
+    for _ in range(0,4):
         guitarBackground(guitar)
         percBackground(perc)
-    if voice == violin:
-        voice.scaledChord([9, 6], 4)
-    else:
-        voice.scaledNote(9, 4)
 
-    if voice == flute:
-        voice.adjustPitchOffset(fluteOffset) # Back to normal.
+    # Part 2 Redux until end of loop.
+    part02_complete(guitar,voice, perc, voice == flute, voice == violin)
 
 
-# For fadeout (in-game, this will be on repeat).
-for x in range(0,4):
+# For fadeout.
+for _ in range(0,4):
     guitarBackground(guitar)
     percBackground(perc)
 
