@@ -144,6 +144,38 @@ class Voice:
             self.asyncNote(pitch, dur)
         self._increaseTime(dur)
 
+    def asyncStrum(self, pitchArr, dur, sp = None):
+        """
+        Add a chord one note at a time (in the order of pitchArr) for a
+        "strumming" effect, asynchronously.
+
+        The `sp` parameter is the space between notes.  By default, it's the
+        minimum of .03 and dur/len(pitchArr).
+        """
+        if sp == None:
+            sp = dur/len(pitchArr)
+            maxAllowed = 0.03
+            if sp > maxAllowed:
+                sp = maxAllowed
+
+        durDum = dur
+        currenttime = self._currenttime
+        # To make this easier, going to add "rests" for the space and then
+        # manually reset the time.
+
+        for x in pitchArr:
+            self.asyncNote(x, durDum)
+            durDum -= sp
+            self.rest(sp)
+        self._currenttime = currenttime
+
+    def strum(self, pitchArr, dur, sp = None):
+        """
+        See docstring from asyncStrum.  This is the synchronous version.
+        """
+        self.asyncStrum(pitchArr, dur, sp)
+        self._increaseTime(dur)
+
     def asyncNote(self, pitch, dur):
         '''
         Add a note without increasing the current time.
@@ -170,8 +202,6 @@ class Voice:
             dur,
             self._volume + noteObj.getVolumeOffset()
         )
-
-    # Todo: String of single-length notes.
 
     def rest(self, dur):
         '''
@@ -302,9 +332,7 @@ class Voice:
         '''
         Add a chord based on the given topNote.
 
-        (See docstring on scaledNote to see details on the params.)
-
-        Todo: Add parameter for inverted chords.
+        DEPRECATED.  Don't use this.
         '''
         self.scaledChord([topNote,topNote-2,topNote-4], dur)
 
@@ -318,19 +346,7 @@ class Voice:
 
         (See docstring on scaledNote to see details on the params.)
         '''
-        # Convert to ScaledNote object, if it's not already.
-        if type(note) == int:
-            scaledNoteObj = ScaledNote(note)
-        elif type(note) == ScaledNote:
-            scaledNoteObj = note
-        else:
-            raise ValueError("note must be either integer or ScaledNote object.")
-
-        # Add absolute pitch for note.
-        pitch = self._getScaledNote(scaledNoteObj.getNote())
-        offset = scaledNoteObj.getAcc()
-        scaledNoteObj.setPitch(pitch + offset)
-
+        scaledNoteObj = self._getAbsPitch(note)
         self.asyncNote(scaledNoteObj, dur)
 
     def scaledChromaticNote(self, note, dur):
@@ -364,6 +380,24 @@ class Voice:
         '''
         for note in noteArr:
             self.asyncScaledChromaticNote(note, dur)
+
+    def asyncScaledStrum(self, noteArr, dur, sp = None):
+        '''
+        Asynchronously add a strummed scaled chord.  See docstring for
+        asyncStrum.
+        '''
+        noteArrDum = []
+        for note in noteArr:
+            noteArrDum.append(self._getAbsPitch(note))
+        self.asyncStrum(noteArrDum, dur, sp)
+
+    def scaledStrum(self, noteArr, dur, sp = None):
+        '''
+        Synchronously add a strummed scaled chord.  See docstring for
+        asyncStrum.
+        '''
+        self.asyncScaledStrum(noteArr, dur, sp)
+        self._increaseTime(dur)
 
 
     # Static functions below this line.
@@ -454,3 +488,24 @@ class Voice:
         arrInd = noteInd % scaleLen
 
         return self._key + octaveOffset + self._scale[arrInd]
+
+    def _getAbsPitch(self, noteIntObj):
+        '''
+        Convert a scaled note object to an absolute pitch.
+
+        Technically just does the calculation to a ScaledNote object necessary
+        to be interpreted as a Note object.
+        '''
+        if type(noteIntObj) == int:
+            scaledNoteObj = ScaledNote(noteIntObj)
+        elif type(noteIntObj) == ScaledNote:
+            scaledNoteObj = noteIntObj
+        else:
+            raise ValueError('note must be either integer or ScaledNote object.')
+
+        # Get absolute pitch for note.
+        pitch = self._getScaledNote(scaledNoteObj.getNote())
+        offset = scaledNoteObj.getAcc()
+        scaledNoteObj.setPitch(pitch + offset)
+
+        return scaledNoteObj
