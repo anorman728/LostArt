@@ -11,40 +11,43 @@ class Voice:
 
     # Scales are used in scaledNote and autoChord.
 
-    # Major scale.
+    # Major scale. (2 2 1 2 2 2 1)
     MAJOR = [0,2,4,5,7,9,11]
 
-    # Natural minor scale.
+    # Natural minor scale. (2 1 2 2 1 2 2)
     NATURAL_MINOR = [0,2,3,5,7,8,10]
 
-    # Harmonic minor scale.
+    # Harmonic minor scale. (2 1 2 2 1 3)
     HARMONIC_MINOR = [0,2,3,5,7,8,11]
 
-    # Hexatonic blues scale.
+    # Hexatonic blues scale. (2 2 1 1 3 2)
     HEXATONIC_BLUES = [0,3,5,6,7,10]
 
-    # Heptatonic blues scale.
+    # Heptatonic blues scale. (2 1 2 1 3 1 2)
     HEPTATONIC_BLUES = [0,2,3,5,6,9,10]
 
-    # Whole-tone scale.
+    # Whole-tone scale. (2 2 2 2 2 2)
     WHOLE_TONE = [0,2,4,6,8,10]
 
-    # Dorian mode.
+    # Ionian mode.  (2 2 1 2 2 2 1) (Same as major scale.  Here for completeness.)
+    IONIAN = [0,2,4,5,7,9,11]
+
+    # Dorian mode. (2 1 2 2 2 1 2)
     DORIAN = [0,2,3,5,7,9,10]
 
-    # Phrygian mode.
+    # Phrygian mode. (1 2 2 2 1 2 2)
     PHRYGIAN = [0,1,3,5,7,8,10]
 
-    # Lydian mode.
+    # Lydian mode. (2 2 2 1 2 2 1)
     LYDIAN = [0,2,4,6,7,9,11]
 
-    # Mixolydian mode.
+    # Mixolydian mode. (2 2 1 2 2 1 2)
     MIXOLYDIAN = [0,2,4,5,7,9,10]
 
-    # Aeolian mode.
+    # Aeolian mode. (2 1 2 2 1 2 2) (Same as natural minor.  Here for completeness.)
     AEOLIAN = [0,2,3,5,7,8,10]
 
-    # Locrian mode.
+    # Locrian mode. (1 2 2 1 2 2 2)
     LOCRIAN = [0,1,3,5,6,8,10]
 
 
@@ -279,13 +282,18 @@ class Voice:
 
     def setScale(self, scale):
         '''
-        Set the scale, being one of the constants in this class, MAJOR,
-        NATURAL_MINOR, HARMONIC_MINOR, HEXATONIC_BLUES, and HEPTATONIC_BLUES.
-        This simply takes an array, though, so if you have some more obscure
-        scale that you want to use, you can enter a numeric array describing
-        that scale.
+        Set the scale, being one of the scale or mode constants in this class,
+        or something that's defined manually.
+        This simply takes an array, so if you have some more obscure scale that
+        you want to use, you can enter a numeric array describing that scale.
         '''
         self._scale = scale
+
+    def getScale(self):
+        '''
+        Get the voice's current scale.
+        '''
+        return self._scale
 
     def setTempo(self, tempo, curtime):
         self._tempo = tempo
@@ -314,19 +322,25 @@ class Voice:
         self.asyncScaledNote(noteInd, dur)
         self._increaseTime(dur)
 
-    def scaledChord(self, noteArr, dur):
+    def scaledChord(self, noteArr, dur, bor = None):
         '''
         Add a chord based on scaled notes.
         '''
-        self.asyncScaledChord(noteArr, dur)
+        self.asyncScaledChord(noteArr, dur, bor)
         self._increaseTime(dur)
 
-    def asyncScaledChord(self, noteArr, dur):
+    def asyncScaledChord(self, noteArr, dur, bor = None):
         '''
         Add a scaled chord asynchronously.
+
+        bor is for borrowing a chord from another scale.
         '''
+        scaleDum = self.getScale()
+        if bor != None:
+            self.setScale(bor)
         for note in noteArr:
             self.asyncScaledNote(note, dur)
+        self.setScale(scaleDum)
 
     def autoChord(self, topNote, dur):
         '''
@@ -381,22 +395,26 @@ class Voice:
         for note in noteArr:
             self.asyncScaledChromaticNote(note, dur)
 
-    def asyncScaledStrum(self, noteArr, dur, sp = None):
+    def asyncScaledStrum(self, noteArr, dur, bor = None, sp = None):
         '''
         Asynchronously add a strummed scaled chord.  See docstring for
         asyncStrum.
         '''
+        scaleDum = self.getScale()
+        if bor != None:
+            self.setScale(bor)
         noteArrDum = []
         for note in noteArr:
             noteArrDum.append(self._getAbsPitch(note))
         self.asyncStrum(noteArrDum, dur, sp)
+        self.setScale(scaleDum)
 
-    def scaledStrum(self, noteArr, dur, sp = None):
+    def scaledStrum(self, noteArr, dur, bor = None, sp = None):
         '''
         Synchronously add a strummed scaled chord.  See docstring for
         asyncStrum.
         '''
-        self.asyncScaledStrum(noteArr, dur, sp)
+        self.asyncScaledStrum(noteArr, dur, bor, sp)
         self._increaseTime(dur)
 
 
