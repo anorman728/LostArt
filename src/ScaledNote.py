@@ -1,7 +1,7 @@
 from Note import Note
 import copy
 
-class ScaledNote(Note): # Not 100% sure this will work yet.
+class ScaledNote(Note):
     '''
     This is a class that helps with some knitty-gritty stuff of individual
     scaled notes.  It has all of the properties of the Note class, but lets you

@@ -1,5 +1,6 @@
 from midiutil.MidiFile import MIDIFile
 from Voice import Voice
+from Percussion import Percussion
 
 class Composition:
     # Private vars
@@ -16,14 +17,23 @@ class Composition:
         self._marks = {}
 
     def buildVoice(self, instrument, name):
+        voiceAmt = len(self._voices)
+        chan = voiceAmt if voiceAmt != 9 else 10
+        # Channel 9 (10 in MIDI docs) is strictly percussion.
+
         voiceDum = Voice(
             self._mf,
-            len(self._voices),
+            chan,
             instrument,
             self._tempo,
             name,
             0, # For now, start all at zero.
         )
+        self._voices.append(voiceDum)
+        return voiceDum
+
+    def buildPerc(self):
+        voiceDum = Percussion(self._mf, self._tempo, 0)
         self._voices.append(voiceDum)
         return voiceDum
 
