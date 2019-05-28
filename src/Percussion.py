@@ -19,31 +19,31 @@ class Percussion(Voice):
         'Square Click'      : 32,
         'Metronome Click'   : 33,
         'Metronome Bell'    : 34,
-        'Bass Drum 2'       : 35,
-        'Bass Drum 1'       : 36,
+        'Bass Drum 2'       : 35, # Trap set
+        'Bass Drum 1'       : 36, # Trap set
         'Side Stick'        : 37,
-        'Snare Drum 1'      : 38,
+        'Snare Drum 1'      : 38, # Trap set
         'Hand Clap'         : 39,
-        'Snare Drum 2'      : 40,
-        'Low Tom 2'         : 41,
-        'Closed Hi-hat'     : 42,
-        'Low Tom 1'         : 43,
-        'Pedal Hi-hat'      : 44,
-        'Mid Tom 2'         : 45,
-        'Open Hi-hat'       : 46,
-        'Mid Tom 1'         : 47,
-        'High Tom 2'        : 48,
-        'Crash Cymbal 1'    : 49,
-        'High Tom 1'        : 50,
-        'Ride Cymbal 1'     : 51,
-        'Chinese Cymbal'    : 52,
+        'Snare Drum 2'      : 40, # Trap set
+        'Low Tom 2'         : 41, # Trap set
+        'Closed Hi-hat'     : 42, # Trap set
+        'Low Tom 1'         : 43, # Trap set
+        'Pedal Hi-hat'      : 44, # Trap set
+        'Mid Tom 2'         : 45, # Trap set
+        'Open Hi-hat'       : 46, # Trap set
+        'Mid Tom 1'         : 47, # Trap set
+        'High Tom 2'        : 48, # Trap set
+        'Crash Cymbal 1'    : 49, # Trap set
+        'High Tom 1'        : 50, # Trap set
+        'Ride Cymbal 1'     : 51, # Trap set
+        'Chinese Cymbal'    : 52, # Trap set
         'Ride Bell'         : 53,
         'Tambourine'        : 54,
-        'Splash Cymbal'     : 55,
+        'Splash Cymbal'     : 55, # Trap set
         'Cowbell'           : 56,
-        'Crash Cymbal 2'    : 57,
+        'Crash Cymbal 2'    : 57, # Trap set
         'Vibra Slap'        : 58,
-        'Ride Cymbal 2'     : 59,
+        'Ride Cymbal 2'     : 59, # Trap set
         'High Bongo'        : 60,
         'Low Bongo'         : 61,
         'Mute High Conga'   : 62,
