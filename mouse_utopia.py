@@ -22,11 +22,13 @@ leadGuitar = comp.buildVoice(27, 'Lead Guitar')
 leadGuitar.adjustPitchOffset(-12)
 
 rhythmGuitar = comp.buildVoice(25, 'Rhythm Guitar')
+#rhythmGuitar = comp.buildVoice(1, 'Piano right hand') # Piano version.
 rhythmGuitar.adjustPitchOffset(-12)
 
 perc = comp.buildPerc()
 
 bassGuitar = comp.buildVoice(34, 'Bass Guitar')
+#bassGuitar = comp.buildVoice(1, 'Piano left hand') # Piano version.
 bassGuitar.adjustPitchOffset(-24)
 
 leadVocal = comp.buildVoice(41, 'Lead Vocal')
@@ -44,18 +46,6 @@ bridgeScale = [0,2,3,5,7,10,11];
 #              0 1 2 3 4 5  6
 
 comp.setScale(Voice.DORIAN)
-
-# Ideas for lyrics:
-#   Troll under every bridge.
-#   Something about keyboard warriors.
-#   Man can't feed his family and we've found justice.
-#   Something about hit pieces.
-#   They don't check the sources.  They won't know we lied.
-#   It doesn't matter what you haven't done.  You're guilty by being their son.
-#   Ask not for whom the mob roars.  It roars for thee.
-#
-#
-#
 
 
 # Functions
@@ -148,8 +138,6 @@ def counterThemeRhyth(voice):
     for _ in range(0,2):
         dummyFunc()
 
-
-
 def themeLead(voice): # 32 beats
     def dummyFunc(offset):
         voice.scaledNote(0 + offset, 1)
@@ -238,11 +226,16 @@ def verseIntro(leadVoice, rhythmVoice, bassVoice, percVoice):
     counterThemePerc(percVoice)
     counterThemeRhyth(rhythmVoice)
 
-def verse(leadVoice, leadVoice2, rhythmVoice, bassVoice, percVoice):
+def verse(leadVoice, leadVoice2, rhythmVoice, bassVoice, percVoice, delayedBassIntro = True):
     rhythmVoice.scaledChord([0, 2], 4)
     rhythmVoice.scaledChord([-1, 1], 4)
-    bassVoice.scaledNote(0, 4)
-    bassVoice.scaledNote(-1, 4)
+    if delayedBassIntro:
+        bassVoice.rest(2)
+        bassVoice.scaledNote(0, 4)
+        bassVoice.scaledNote(-1, 2)
+    else:
+        bassVoice.scaledNote(0, 4)
+        bassVoice.scaledNote(-1, 4)
 
     for _ in range(0, 4):
         percVoice.beat('Snare Drum 1', 1)
@@ -426,7 +419,6 @@ def chorus(leadVoice, leadVoice2, rhythmVoice, bassVoice, percVoice):
     themeRhythm(rhythmVoice)
     themeBass(bassVoice)
     themePerc(percVoice)
-    
 
 def bridgeIntro(voice1, voice2, bassVoice, percVoice):
     voice1.scaledChord([0, 2], 4)
@@ -459,27 +451,27 @@ def bridgeIntro(voice1, voice2, bassVoice, percVoice):
         percVoice.beat('Mid Tom 1', .5)
         percVoice.beat('Mid Tom 2', .5)
     percVoice.beat('Low Tom 1', 1)
-    percVoice.rest(5)
+    #percVoice.rest(5)
     percVoice.beat('Bass Drum 1', 0)
     percVoice.beat('Low Tom 1', 2)
     percVoice.beat('Bass Drum 1', 0)
     percVoice.beat('Low Tom 1', 1)
 
-    bassVoice.rest(4)
-    for _ in range(0,2):
-        bassVoice.scaledNote(-8, 2)
-        bassVoice.scaledNote(-7, 6)
-    bassVoice.rest(2)
-    bassVoice.scaledNote(-7, 6)
-    bassVoice.rest(2)
+    #bassVoice.rest(4)
+    #for _ in range(0,2):
+    #    bassVoice.scaledNote(-8, 2)
+    #    bassVoice.scaledNote(-7, 6)
+    #bassVoice.rest(2)
+    #bassVoice.scaledNote(-7, 6)
+    #bassVoice.rest(2)
 
-    percVoice.rest(4)
-    for _ in range(0,3):
-        percVoice.beat('Bass Drum 2', 0)
-        percVoice.beat('Low Tom 2', 1)
-        percVoice.beat('Bass Drum 2', 0)
-        percVoice.beat('Low Tom 2', 1)
-        percVoice.rest(2)
+    #percVoice.rest(4)
+    #for _ in range(0,3):
+    percVoice.beat('Bass Drum 2', 0)
+    percVoice.beat('Low Tom 2', 1)
+    percVoice.beat('Bass Drum 2', 0)
+    percVoice.beat('Low Tom 2', 1)
+    percVoice.rest(1)
 
 
 def bridge(voice1, voice2, rhythmVoice, bassVoice, percVoice):
@@ -487,6 +479,7 @@ def bridge(voice1, voice2, rhythmVoice, bassVoice, percVoice):
     bridgePerc01(percVoice)
     bridgeRhythm01(rhythmVoice)
     bridgeBass01(bassVoice)
+    bridgeLead01(voice2)
 
     comp.catchUpAll()
     bridgeLead02(voice2)
@@ -560,7 +553,10 @@ def bridgeVocal01(voice1):
     voice1.scaledNote(-1, 1)
     # (6)
 
-    # Todo: Lyrics at end of bridge: Bitterness will drive us to victory\Blood moves the wheels of history.
+def bridgeLead01(voice):
+    voice.rest(23)
+    for x in [5]:
+        voice.scaledNote(x, 1)
 
 def bridgePerc01(voice):
     def dummyFunc():
@@ -606,7 +602,6 @@ def bridgeBass04(voice):
         voice.scaledNote(1+offset, .5)
         voice.scaledNote(0+offset, .5)
         voice.scaledNote(1+offset, 9)
-    #voice.rest(10)
     dummyFunc(-8)
     dummyFunc(-8)
     dummyFunc(-9)
@@ -790,7 +785,8 @@ def bridgeRhythm05(voice):
     dummyFunc([1, 3], 2)
     voice.scaledChord([1, 3], 1)
 
-    dummyFunc([1, 4], 3)
+    voice.scaledChord([1, 3], 1)
+    dummyFunc([1, 4], 2)
     dummyFunc([2, 4], 2)
     voice.scaledChord([2, 4], 1)
 
@@ -823,11 +819,6 @@ def bridgePerc05(voice):
 
 # Composition
 
-#comp.stop()#dmz1
-
-# *Almost done*  Todo items:
-# > Tweak the bridge again.  (I still don't like the transition into the first vocal part.  But I think it's more the timing than the notes.  Though, I may add rhythm guitar riff.  Don't think so, though.)
-# > Slow down the last vocal part of the bridge to hear it more clearly.
 
 # Intro
 themeLeadIntro(leadGuitar)
@@ -843,9 +834,6 @@ perc.beat('Snare Drum 1', 0)
 perc.beat('Open Hi-hat', 1)
 
 
-# Set volume of background instruments here.
-#rhythmGuitar.setVolume(80)
-#bassGuitar.setVolume(80)
 perc.setVolume(110)
 
 
@@ -861,13 +849,15 @@ rhythmGuitar.mute(False)
 
 comp.catchUpAll()
 leadGuitar.mute(True) # Lead guitar is heard only in second and third verse.
-verse(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc)
+verse(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc, False)
 leadGuitar.mute(False)
 
 
 # Chorus
 comp.catchUpAll()
+leadGuitar.mute(True) # Lead guitar is heard only in second and third chorus.
 chorus(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc)
+leadGuitar.mute(False)
 
 
 # Second verse intro.
@@ -888,7 +878,7 @@ chorus(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc)
 
 # Bridge
 comp.catchUpAll()
-comp.setKey(baseKey+4)
+comp.setKey(baseKey + 4)
 verseIntro(leadGuitar, rhythmGuitar, bassGuitar, perc)
 
 comp.catchUpAll()
