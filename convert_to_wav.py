@@ -11,4 +11,4 @@ exec(open("./default_settings.py").read())
 
 argv = sys.argv
 
-os.system('fluidsynth -F "' + argv[1] + '.wav" ' + SETTING__SOUND_FONT + ' ' + argv[1])
+os.system('fluidsynth -g 1.5 -F "' + argv[1] + '.wav" ' + SETTING__SOUND_FONT + ' ' + argv[1])

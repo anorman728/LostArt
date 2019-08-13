@@ -22,23 +22,34 @@ leadGuitar = comp.buildVoice(27, 'Lead Guitar')
 leadGuitar.adjustPitchOffset(-12)
 
 rhythmGuitar = comp.buildVoice(25, 'Rhythm Guitar')
-#rhythmGuitar = comp.buildVoice(1, 'Piano right hand') # Piano version.
 rhythmGuitar.adjustPitchOffset(-12)
 
 perc = comp.buildPerc()
 
 bassGuitar = comp.buildVoice(34, 'Bass Guitar')
-#bassGuitar = comp.buildVoice(1, 'Piano left hand') # Piano version.
 bassGuitar.adjustPitchOffset(-24)
 
-leadVocal = comp.buildVoice(41, 'Lead Vocal')
+leadVocal = comp.buildVoice(28, 'Lead Vocal')
 leadVocal.adjustPitchOffset(-12)
-#leadVocal.setVolume(127)
-leadVocal.mute(True)
+leadVocal.setVolume(80)
+#leadVocal.mute(True)
+
+# Piano exists because my original idea of implementing an instrumental version
+# involved replacing voice with piano.  That didn't work out, but I left it here
+# since I did do some work on it.
+rPiano = comp.buildVoice(1, 'Piano Right Hand')
+rPiano.adjustPitchOffset(-12)
+rPiano.setVolume(110)
+rPiano.mute(True)
+
+lPiano = comp.buildVoice(1, 'Piano Left Hand')
+lPiano.adjustPitchOffset(-24)
+#lPiano.setVolume(110)
+lPiano.mute(True)
 
 
 baseKey = 67
-baseKey = 70
+#baseKey = 70
 comp.setKey(baseKey)
 
 #modScale = [0,1,3,5,7,8,10]
@@ -253,24 +264,65 @@ def verse(leadVoice, leadVoice2, rhythmVoice, bassVoice, percVoice, delayedBassI
     verseBass(bassVoice)
     versePerc(percVoice)
 
+def verse1_instr(voiceR, voiceL):
+    voiceR.rest(8)
+    def verseDum(offset = 0):
+        voiceR.rest(1)
+        voiceL.catchUp(voiceR.whereAreWe())
+
+        voiceR.asyncScaledChord([-3 + offset], 3)
+        voiceR.scaledNote(offset, 1)
+        voiceR.scaledNote(offset, 1)
+        voiceR.scaledNote(offset, 1)
+        voiceR.scaledChord([-2 + offset, 1 + offset], 2)
+        voiceR.scaledChord([-4 + offset, -1 + offset], 2)
+        voiceR.scaledChord([-3 + offset, offset], 5)
+        voiceR.rest(3)
+
+        voiceL.scaledChord([-3 + offset], 3)
+        voiceL.scaledChord([-2 + offset], 4)
+        voiceL.scaledChord([-7 + offset], 5)
+
+    def verseDum2(offset = 0):
+        voiceL.catchUp(voiceR.whereAreWe())
+        voiceR.rest(1)
+        voiceR.scaledChord([4 + offset, 2 + offset], 1)
+        voiceR.scaledNote(3 + offset, 1)
+        voiceR.scaledNote(2 + offset, 1)
+        voiceR.scaledChord([3 + offset, offset], 2)
+        voiceR.scaledChord([1 + offset, -2 + offset], 2)
+
+        voiceL.rest(1)
+        voiceL.scaledChord([6 + offset, 2 + offset], 3)
+        voiceL.scaledChord([3 + offset, offset], 2)
+
+
+    verseDum(0)
+    verseDum(2)
+
+    verseDum2(0)
+    verseDum2(-1)
+
+    verseDum(0)
+
 def verseVocal(leadVoice):
     def verseDum(offset=0):
         leadVoice.rest(1)
         for _ in range(0,3):
-            leadVoice.scaledNote(0+offset, 1)
-        leadVoice.scaledNote(1+offset, 2)
-        leadVoice.scaledNote(-1+offset, 2)
-        leadVoice.scaledNote(0+offset, 3)
+            leadVoice.scaledNote(offset, 1)
+        leadVoice.scaledChord([1 + offset, -2 + offset], 2)
+        leadVoice.scaledChord([ -1 + offset, -4 + offset], 2)
+        leadVoice.scaledChord([offset, -3 + offset], 3)
         leadVoice.rest(5)
         # 16 beats
 
     def verseDum2(offset=0):
         leadVoice.rest(1)
-        leadVoice.scaledNote(4+offset, 1)
-        leadVoice.scaledNote(3+offset, 1)
-        leadVoice.scaledNote(2+offset, 1)
-        leadVoice.scaledNote(3+offset, 2)
-        leadVoice.scaledNote(1+offset, 2)
+        leadVoice.scaledChord([4 + offset], 1)
+        leadVoice.scaledChord([3 + offset], 1)
+        leadVoice.scaledChord([2 + offset], 1)
+        leadVoice.scaledChord([3 + offset, 0 + offset], 2)
+        leadVoice.scaledChord([1 + offset, -2 + offset], 2)
         # 8 beats
 
     # 1. Troll under every bridge.
@@ -422,6 +474,26 @@ def chorus(leadVoice, leadVoice2, rhythmVoice, bassVoice, percVoice):
     themeBass(bassVoice)
     themePerc(percVoice)
 
+def chorus_instr(voiceR, voiceL):
+    voiceR.rest(7)
+    def dummyFunc(offset):
+        voiceL.catchUp(voiceR.whereAreWe())
+        voiceR.scaledChord([offset], 1)
+        voiceR.scaledChord([offset - 1, 2 + offset], 2)
+        voiceR.scaledChord([offset - 1, offset + 1], 2)
+        voiceR.scaledChord([offset - 4, offset - 1], 3)
+
+        voiceL.rest(1)
+        voiceL.scaledChord([offset - 1], 4)
+        voiceL.scaledChord([offset - 4], 3)
+
+    dummyFunc(0)
+    dummyFunc(1)
+    dummyFunc(0)
+
+    voiceR.scaledChord([0, -2], 1)
+    voiceR.scaledChord([0, -3], 7)
+
 def bridgeIntro(voice1, voice2, bassVoice, percVoice):
     voice1.scaledChord([0, 2], 4)
     voice1.scaledChord([1, 4], 4)
@@ -520,6 +592,7 @@ def bridge(voice1, voice2, rhythmVoice, bassVoice, percVoice):
 def bridgeVocal01(voice1):
     # Strike down.
     voice1.scaledNote(-4, 1)
+    voice1.asyncScaledNote(-6, 5)
     voice1.scaledNote(-3, 2)
     # (3)
 
@@ -530,14 +603,16 @@ def bridgeVocal01(voice1):
 
     # Be any dissention.
     voice1.scaledNote(-3, 1)
+    voice1.asyncScaledNote(-4, 3)
     for _ in range(0, 3):
         voice1.scaledNote(-1, 1)
-    voice1.scaledNote(-2, 1)
-    voice1.scaledNote(-4, 1)
+    voice1.scaledChord([-2], 1)
+    voice1.scaledChord([-4], 1)
     # (6)
 
     # No grace.
-    voice1.scaledNote(-1, 1)
+    voice1.scaledChord([-1, -3], 1)
+    voice1.asyncScaledNote(-3, 6)
     voice1.scaledNote(0, 2)
     # (3)
 
@@ -548,10 +623,11 @@ def bridgeVocal01(voice1):
 
     # No hope of redemption.
     voice1.scaledNote(0, 1)
+    voice1.asyncScaledNote(-1, 3)
     for _ in range(0, 3):
         voice1.scaledNote(2, 1)
-    voice1.scaledNote(1, 1)
-    voice1.scaledNote(-1, 1)
+    voice1.scaledChord([1], 1)
+    voice1.scaledChord([-1], 1)
     # (6)
 
 def bridgeLead01(voice):
@@ -747,17 +823,17 @@ def bridgeLead03(voice):
     voice.setVolume(volDum)
 
 def bridgeVocal05(voice):
-    voice.rest(1)
-
     # The bitterness will drive us to victory.
+    voice.scaledNote(-1, 1)
+    voice.asyncScaledNote(-3, 7)
     voice.scaledNote(0, 1)
     voice.scaledNote(0, .5)
     voice.scaledNote(0, .5)
     for _ in range(0, 5):
         voice.scaledNote(0, 1)
-    voice.scaledNote(2, 1.5)
-    voice.scaledNote(1, .5)
-    voice.scaledNote(1, 2)
+    voice.scaledChord([2, 0], 1.5)
+    voice.scaledChord([1, -2], .5)
+    voice.scaledChord([1, -2], 2)
     # (11)
 
     voice.rest(1)
@@ -766,10 +842,10 @@ def bridgeVocal05(voice):
     voice.scaledNote(1, 1)
     for _ in range(0,2):
         for x in [3, 2, 1]:
-            voice.scaledNote(x, 1)
-    voice.scaledNote(3, 1.5)
-    voice.scaledNote(2, .5)
-    voice.scaledNote(2, 2)
+            voice.scaledChord([x, x - 2], 1)
+    voice.scaledChord([3, 1], 1.5)
+    voice.scaledChord([2, 0], .5)
+    voice.scaledChord([2, 0], 2)
     # (11)
 
 def bridgeRhythm05(voice):
@@ -853,6 +929,7 @@ rhythmGuitar.mute(False)
 comp.catchUpAll()
 leadGuitar.mute(True) # Lead guitar is heard only in second and third verse.
 verse(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc, False)
+verse1_instr(rPiano, lPiano)
 leadGuitar.mute(False)
 
 
@@ -860,6 +937,7 @@ leadGuitar.mute(False)
 comp.catchUpAll()
 leadGuitar.mute(True) # Lead guitar is heard only in second and third chorus.
 chorus(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc)
+chorus_instr(rPiano, lPiano)
 leadGuitar.mute(False)
 
 
@@ -872,17 +950,18 @@ verseIntro(leadGuitar, rhythmGuitar, bassGuitar, perc)
 
 comp.catchUpAll()
 verse(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc)
+verse1_instr(rPiano, lPiano)
 
 
 # Chorus
 comp.catchUpAll()
 chorus(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc)
+chorus_instr(rPiano, lPiano)
 
 
 # Bridge
 comp.catchUpAll()
 comp.setKey(baseKey + 4)
-comp.start()#dmz1
 verseIntro(leadGuitar, rhythmGuitar, bassGuitar, perc)
 
 comp.catchUpAll()
@@ -892,13 +971,16 @@ bridge(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc)
 
 
 # Final chorus.
+leadVocal.setVolume(95)
 comp.catchUpAll()
 chorus(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc)
+chorus_instr(rPiano, lPiano)
 
 # Third verse.
 
 comp.catchUpAll()
 verse(leadVocal, leadGuitar, rhythmGuitar, bassGuitar, perc)
+verse1_instr(rPiano, lPiano)
 
 
 # Ending

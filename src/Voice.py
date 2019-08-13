@@ -234,6 +234,13 @@ class Voice:
         '''
         return self._currenttime
 
+    def printWhere(self):
+        '''
+        Print out to console the value of self._currenttime.  Can be useful to
+        get timing right when debugging.
+        '''
+        print(self._name + ": " + str(self._currenttime))
+
     def mute(self, tf):
         '''
         Mute this instrument
