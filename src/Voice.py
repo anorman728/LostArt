@@ -2,6 +2,12 @@ from Note import Note
 from ScaledNote import ScaledNote
 import math
 
+'''
+Things that I want to do:
+    Tuning, which I think can be done easily with the pitch wheel event.
+    https://midiutil.readthedocs.io/en/1.2.1/class.html#midiutil.MidiFile.MIDIFile.addPitchWheelEvent
+'''
+
 class Voice:
     '''
     Class describing an individual voice in the composition.
@@ -29,25 +35,25 @@ class Voice:
     # Whole-tone scale. (2 2 2 2 2 2)
     WHOLE_TONE = [0,2,4,6,8,10]
 
-    # Ionian mode.  (2 2 1 2 2 2 1) (Same as major scale.  Here for completeness.)
+    # Ionian mode.  (2 2 1 2 2 2 1) (W W H W W W H)(Same as major scale.  Here for completeness.)
     IONIAN = [0,2,4,5,7,9,11]
 
-    # Dorian mode. (2 1 2 2 2 1 2)
+    # Dorian mode. (2 1 2 2 2 1 2) (W H W W W H W)
     DORIAN = [0,2,3,5,7,9,10]
 
-    # Phrygian mode. (1 2 2 2 1 2 2)
+    # Phrygian mode. (1 2 2 2 1 2 2) (H W W W H W W)
     PHRYGIAN = [0,1,3,5,7,8,10]
 
-    # Lydian mode. (2 2 2 1 2 2 1)
+    # Lydian mode. (2 2 2 1 2 2 1) (W W W H W W H)
     LYDIAN = [0,2,4,6,7,9,11]
 
-    # Mixolydian mode. (2 2 1 2 2 1 2)
+    # Mixolydian mode. (2 2 1 2 2 1 2) (W W H W W H W)
     MIXOLYDIAN = [0,2,4,5,7,9,10]
 
-    # Aeolian mode. (2 1 2 2 1 2 2) (Same as natural minor.  Here for completeness.)
+    # Aeolian mode. (2 1 2 2 1 2 2) (W H W W H W W) (Same as natural minor.  Here for completeness.)
     AEOLIAN = [0,2,3,5,7,8,10]
 
-    # Locrian mode. (1 2 2 1 2 2 2)
+    # Locrian mode. (1 2 2 1 2 2 2) (H W W H W W W)
     LOCRIAN = [0,1,3,5,6,8,10]
 
 
@@ -239,7 +245,7 @@ class Voice:
         Print out to console the value of self._currenttime.  Can be useful to
         get timing right when debugging.
         '''
-        print(self._name + ": " + str(self._currenttime))
+        print(self._name + ": " + str(self._currenttime) + " : vol " + str(self._volume))
 
     def mute(self, tf):
         '''
@@ -252,6 +258,37 @@ class Voice:
         Change the volume.  Default volume is 100, but can go as high as 127.
         '''
         self._volume = newVol
+
+    def slideVolume(self, start, stop, dur, ticks = 10):
+        '''
+        Slide the volume (cresendo/decrescendo).
+        '''
+        if (self._stop):
+            # Do nothing if stopped
+            return;
+        # step = dur/ticks
+        # v(t) = ((y-x)/(v-a))*(t-b) + y
+        cur = self._currenttime
+        step = dur/ticks
+        for x in range(0, ticks):
+            t = cur + (step * x)
+            v = (stop - start)/(dur) * (t - cur - dur) + stop
+            v = int(round(v)) # Must be integer.
+            self._mf.addControllerEvent(
+                self._track,
+                self._channel,
+                t,
+                7, # Volume controller event.
+                v
+            )
+        # Reset
+        self._mf.addControllerEvent(
+            self._track,
+            self._channel,
+            cur + dur + step,
+            7,
+            100
+        )
 
     def stop(self):
         '''
