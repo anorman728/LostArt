@@ -201,7 +201,7 @@ class Voice:
         elif type(pitch) == ScaledNote or type(pitch) == Note:
             noteObj = pitch
         else:
-            raise ValueError("note must be integer, Note, or ScaledNote object.")
+            raise ValueError("note must be integer, Note, or ScaledNote object.  Found " + str(type(pitch)))
 
         self._mf.addNote(
             self._track,
@@ -258,6 +258,13 @@ class Voice:
         Change the volume.  Default volume is 100, but can go as high as 127.
         '''
         self._volume = newVol
+
+    def adjustVolume(self, offset):
+        '''
+        Change the volume by an offset (a relative value), rather than an
+        absolute value.
+        '''
+        self._volume+=offset
 
     def slideVolume(self, start, stop, dur, ticks = 10):
         '''
